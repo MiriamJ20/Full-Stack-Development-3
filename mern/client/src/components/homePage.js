@@ -6,16 +6,20 @@ const HomePage = () => {
 		<div>
 			<h1>Welcome to Rocket Elevators</h1>
 			<div className="navigation-cards">
+				<h3>Agent Management</h3>
 				<Link to="/agentList" className="card">
-					<h3>Agents</h3>
 					<p>
-						Navigate to the Agents page 
+						<button to="/agentList">Agent List</button>
+						<br/>
+						<button to="/create">Sign Up</button>
 					</p>
 				</Link>
+			</div>
+			<div>
+				<h3>Transactions</h3>
 				<Link to="/transactionList" className="card">
-					<h3>Transactions</h3>
 					<p>
-						Navigate to the Transaction page
+						<button to="/transactionList"> Transction List</button>
 					</p>
 				</Link>
 			</div>
