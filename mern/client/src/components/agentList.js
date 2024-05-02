@@ -9,17 +9,9 @@ const Agent = (props) => (
 		<td>${props.agent.fee}</td>
 		<td>
 			<Link className="btn btn-link" to={`/edit/${props.agent._id}`}>
-				Edit
+				Edit Agent
 			</Link>{" "}
-			|
-			<button
-				className="btn btn-link"
-				onClick={() => {
-					props.deleteAgent(props.agent._id);
-				}}
-			>
-				Delete
-			</button>
+			
 		</td>
 	</tr>
 );
