@@ -10,6 +10,8 @@ import AgentList from "./components/agentList";
 import Edit from "./components/edit";
 import Create from "./components/create";
 import Error from "./components/error";
+import Homepage from "./components/homePage";
+import TransactionList from "./components/transactionList";
 
 const App = () => {
   return (
@@ -20,8 +22,10 @@ const App = () => {
 					<Route exact path="/" element={<LoginPage />} />
 					<Route path="/agentList" element={<AgentList />} />
 					<Route path="/edit/:id" element={<Edit />} />
-				  	<Route path="/create" element={<Create />} />
-				  	<Route path="/error" element={<Error />} />
+					<Route path="/create" element={<Create />} />
+					<Route path="/error" element={<Error />} />
+					<Route path="/homePage" element={<Homepage />} />
+					<Route path="/transactionList" element={<TransactionList />} />
 				</Routes>
 			</div>
 		</div>

@@ -20,6 +20,7 @@ const loginSchema = new mongoose.Schema(
 		},
 		password: {
 			type: String,
+			trim: true,
 			required: true,
         },
 	},
