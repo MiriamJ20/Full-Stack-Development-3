@@ -1,108 +1,74 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-const TransactionPage = () => {
-	// State to store the list of transactions
+const Transactions = (props) => (
+	<tr>
+		<td>
+		{props.transactions.first_name} {props.transactions.last_name}
+		</td>
+		<td>${props.transactions.amount}</td>
+		<td>{props.transactions.date}</td>
+	</tr>
+);
+
+export default function TransactionList() {
 	const [transactions, setTransactions] = useState([]);
 
-	// State to store form data for creating new transactions
-	const [formData, setFormData] = useState({
-		// Initialize form fields if needed
-		// Example:
-		// amount: "",
-		// description: ""
-	});
-
-	// useEffect hook to fetch the list of transactions when the component mounts
+	// This method fetches the transaction from the database.
 	useEffect(() => {
-		// Fetch the list of transactions from the backend API
-		// Example:
-		// fetchTransactions();
-	}, []);
+		async function getTransactions() {
+			const response = await fetch(`http://localhost:5050/transactionList/`);
 
-	// Function to fetch the list of transactions
-	const fetchTransactions = async () => {
-		try {
-			// Make a fetch request to the backend API to get the list of transactions
-			// Example:
-			// const response = await fetch("http://localhost:5050/transactions");
-			// const data = await response.json();
-			// setTransactions(data);
-		} catch (error) {
-			console.error("Error fetching transactions:", error);
+			if (!response.ok) {
+				const message = `An error occurred: ${response.statusText}`;
+				window.alert(message);
+				return;
+			}
+
+			const transactions = await response.json();
+			setTransactions(transactions);
 		}
-	};
+		getTransactions();
 
-	// Function to handle form input changes
-	const handleInputChange = (e) => {
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name]: value,
+		return;
+	}, [transactions.length]);
+
+	// This method will delete a transaction
+	async function deleteTransaction(id) {
+		await fetch(`http://localhost:5050/transactionList/${id}`, {
+			method: "DELETE",
 		});
-	};
 
-	// Function to handle form submission for creating a new transaction
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			// Make a fetch request to the backend API to create a new transaction
-			// Example:
-			// const response = await fetch("http://localhost:5050/transactions", {
-			//   method: "POST",
-			//   headers: {
-			//     "Content-Type": "application/json"
-			//   },
-			//   body: JSON.stringify(formData)
-			// });
-			// const data = await response.json();
-			// // Update the list of transactions with the newly created transaction
-			// setTransactions([data, ...transactions.slice(0, 9)]);
-			// // Clear the form data
-			// setFormData({
-			//   amount: "",
-			//   description: ""
-			// });
-		} catch (error) {
-			console.error("Error creating transaction:", error);
-		}
-	};
+		const newTransaction = transactions.filter((el) => el._id !== id);
+		setTransactions(newTransaction);
+	}
 
+	// This method will map out the transactions on the table
+	function TransactionList() {
+		return transactions.map((transaction) => {
+			return (
+				<transactions
+					Transaction={transactions}
+					deleteTransaction={() => deleteTransaction(transactions._id)}
+					key={Transactions._id}
+				/>
+			);
+		});
+	}
+
+	// This following section will display the table with the Transaction.
 	return (
 		<div>
-			<h1>Transaction Page</h1>
-			{/* Transaction List */}
-			<div>
-				<h2>Last 10 Transactions</h2>
-				{/* Render the list of transactions here */}
-			</div>
-			{/* Transaction Form */}
-			<div>
-				<h2>Create New Transaction</h2>
-				<form onSubmit={handleSubmit}>
-					{/* Form inputs for creating a new transaction */}
-					{/* Example:
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleInputChange}
-            placeholder="Amount"
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Description"
-            required
-          />
-          */}
-					<button type="submit">Submit</button>
-				</form>
-			</div>
+			<h1>Transactions</h1>
+			<table className="table table-striped" style={{ marginTop: 20 }}>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Amount</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+				<tbody>{TransactionList()}</tbody>
+			</table>
 		</div>
 	);
-};
-
-export default TransactionPage;
+}
