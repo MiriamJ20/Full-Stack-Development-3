@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const transactionsSchema = new mongoose.Schema(
+const transactionSchema = new mongoose.Schema(
 	{
 		amount: {
 			type: Number,
@@ -22,4 +22,4 @@ const transactionsSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("transactions", transactionsSchema);
+module.exports = mongoose.model("transactions", transactionSchema);

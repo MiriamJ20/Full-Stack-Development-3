@@ -23,7 +23,6 @@ export default function NewTransaction() {
 			window.alert("Please fill out all fields.");
 			return;
 		}
-		// When a post request is sent to the create url, we'll add a new Transaction to the database.
 		const newTransaction = { ...form };
 
 		await fetch("http://localhost:5050/transaction/", {

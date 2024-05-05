@@ -47,7 +47,7 @@ export default function LoginPage() {
 		}
 
 		try {
-			const response = await fetch("http://localhost:5050/login/login/", {
+			const response = await fetch("http://localhost:5050/login/login", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(loginForm),

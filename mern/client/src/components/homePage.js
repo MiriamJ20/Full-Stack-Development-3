@@ -29,7 +29,6 @@ const HomePage = () => {
 						<Link to="/transactionList">
 							<p>
 								<button className="btn btn-danger" to="/transactionList">
-									{" "}
 									Transaction List
 								</button>
 							</p>

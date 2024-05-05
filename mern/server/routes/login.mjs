@@ -2,6 +2,7 @@ import express from "express";
 import db from "../db/conn.js";
 
 const router = express.Router();
+
 // Login Endpoint
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
@@ -13,6 +14,7 @@ router.post("/login", async (req, res) => {
 		res.status(200).send("Success");
 	}
 });
+
 // Register endpoint
 router.post("/register", async (req, res) => {
     const { first_name, last_name, email, password } = req.body;
