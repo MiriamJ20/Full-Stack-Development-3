@@ -1,74 +1,81 @@
 import React, { useEffect, useState } from "react";
+import TransactionForm from "./transactionForm";
 
-const Transactions = (props) => (
+const Transaction = (props) => (
 	<tr>
 		<td>
-		{props.transactions.first_name} {props.transactions.last_name}
+			{props.transaction.first_name} {props.transaction.last_name}
 		</td>
-		<td>${props.transactions.amount}</td>
-		<td>{props.transactions.date}</td>
+		<td>${props.transaction.amount}</td>
+		<td>{props.transaction.date}</td>
+		<td>
+		<button onClick={() => props.deleteTransaction(props.transaction._id)}>
+			Delete
+		</button>
+		</td>
 	</tr>
 );
 
 export default function TransactionList() {
 	const [transactions, setTransactions] = useState([]);
 
-	// This method fetches the transaction from the database.
-	useEffect(() => {
-		async function getTransactions() {
-			const response = await fetch(`http://localhost:5050/transactionList/`);
-
-			if (!response.ok) {
-				const message = `An error occurred: ${response.statusText}`;
-				window.alert(message);
-				return;
-			}
-
-			const transactions = await response.json();
-			setTransactions(transactions);
+	// This method fetches the tranactions from the database.
+useEffect(() => {
+	async function getTransactions() {
+		const response = await fetch("http://localhost:5050/transaction/");
+				
+		if (!response.ok) {
+			const message = `An error has occurred: ${response.statusText}`;
+			window.alert(message);
+       		return;
 		}
-		getTransactions();
 
-		return;
+		const transactions = await response.json();
+		setTransactions(transactions);
+	}
+		// getTransactions();
 	}, [transactions.length]);
 
-	// This method will delete a transaction
-	async function deleteTransaction(id) {
-		await fetch(`http://localhost:5050/transactionList/${id}`, {
-			method: "DELETE",
-		});
+	// This will delete a transaction
+async function deleteTransaction(id) {
+	await fetch(`http://localhost:5050/transaction/${id}`, {
+		method: "DELETE",
+	});
 
-		const newTransaction = transactions.filter((el) => el._id !== id);
-		setTransactions(newTransaction);
+	const newTransactions = transactions.filter((el) => el._id !== id);
+	setTransactions(newTransactions);
+}	
+
+	// This will map out the transactions on the table
+	function renderTransactions() {
+		return transactions.map((transaction) => (
+			<Transaction
+				transaction={transaction}
+				key={transaction._id}
+				deleteTransaction={() => deleteTransaction(transaction._id)}
+			/>
+		));
 	}
 
-	// This method will map out the transactions on the table
-	function TransactionList() {
-		return transactions.map((transaction) => {
-			return (
-				<transactions
-					Transaction={transactions}
-					deleteTransaction={() => deleteTransaction(transactions._id)}
-					key={Transactions._id}
-				/>
-			);
-		});
-	}
-
-	// This following section will display the table with the Transaction.
+	// This section will display the table with the Transactions.
 	return (
 		<div>
-			<h1>Transactions</h1>
+			<h1>Rocket Elevators Transactions</h1>
+			<br></br>
+			<TransactionForm />
+			<br></br>
+			<h1>Recent Transactions</h1>
 			<table className="table table-striped" style={{ marginTop: 20 }}>
 				<thead>
 					<tr>
 						<th>Name</th>
 						<th>Amount</th>
 						<th>Date</th>
+						<th>Actions</th>
 					</tr>
 				</thead>
-				<tbody>{TransactionList()}</tbody>
+				<tbody>{renderTransactions()}</tbody>
 			</table>
 		</div>
 	);
-}
+};
