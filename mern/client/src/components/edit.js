@@ -40,13 +40,18 @@ export default function Edit() {
 
  // These methods will update the state properties.
  function updateForm(value) {
-   return setForm((prev) => {
-     return { ...prev, ...value };
+    return setForm((prev) => {
+    return { ...prev, ...value };
    });
  }
 
  async function onSubmit(e) {
-   e.preventDefault();
+	e.preventDefault();
+	 
+	if (!window.confirm("Are you sure you want to update this agent?")) {
+      return;
+    }
+
    const editedAgent = {
      first_name: form.first_name,
      last_name: form.last_name,
@@ -66,6 +71,20 @@ export default function Edit() {
 
    navigate("/agentList");
  }
+	
+  async function onDelete() {
+		// Show a confirmation popup before deleting the agent
+		if (!window.confirm("Are you sure you want to delete this agent?")) {
+			return;
+		}
+
+		// This will send a delete request to delete the agent from the database.
+		await fetch(`http://localhost:5050/agent/${params.id}`, {
+			method: "DELETE",
+		});
+
+		navigate("/agentList");
+	}	
 
  // This following section will display the form that takes input from the user to update the data.
  return (
@@ -129,6 +148,9 @@ export default function Edit() {
 						value="Update Agent"
 						className="btn btn-primary"
 					/>
+					<button className="btn btn-danger" onClick={onDelete}>
+						Delete Agent
+					</button>
 				</div>
 			</form>
 		</div>
