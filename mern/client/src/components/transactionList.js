@@ -1,69 +1,60 @@
 import React, { useEffect, useState } from "react";
 import TransactionForm from "./transactionForm";
 
-const Transaction = (props) => (
-	<tr>
-		<td>
-			{props.transaction.first_name} {props.transaction.last_name}
-		</td>
-		<td>${props.transaction.amount}</td>
-		<td>{props.transaction.date}</td>
-		<td>
-		<button onClick={() => props.deleteTransaction(props.transaction._id)}>
-			Delete
-		</button>
-		</td>
-	</tr>
-);
-
 export default function TransactionList() {
 	const [transactions, setTransactions] = useState([]);
 
-	// This method fetches the tranactions from the database.
-useEffect(() => {
-	async function getTransactions() {
-		const response = await fetch("http://localhost:5050/transaction/");
-				
-		if (!response.ok) {
-			const message = `An error has occurred: ${response.statusText}`;
-			window.alert(message);
-       		return;
+	useEffect(() => {
+		async function fetchTransactionData() {
+			try {
+				const response = await fetch(
+					"http://localhost:5050/transaction/transaction"
+				);
+				if (!response.ok) {
+					throw new Error(`An error occurred: ${response.statusText}`);
+				}
+				const data = await response.json();
+				setTransactions(data);
+			} catch (error) {
+				console.error("Error fetching transactions:", error);
+			}
 		}
 
-		const transactions = await response.json();
-		setTransactions(transactions);
-	}
-		// getTransactions();
-	}, [transactions.length]);
+		fetchTransactionData();
+	}, []);
 
-	// This will delete a transaction
-async function deleteTransaction(id) {
-	await fetch(`http://localhost:5050/transaction/${id}`, {
-		method: "DELETE",
-	});
+	const handleDelete = async (id) => {
+		try {
+			await fetch(`http://localhost:5050/transaction/${id}`, {
+				method: "DELETE",
+			});
+			setTransactions(
+				transactions.filter((transaction) => transaction._id !== id)
+			);
+		} catch (error) {
+			console.error("Error deleting transaction:", error);
+		}
+	};
 
-	const newTransactions = transactions.filter((el) => el._id !== id);
-	setTransactions(newTransactions);
-}	
-
-	// This will map out the transactions on the table
-	function renderTransactions() {
+	const renderTransactions = () => {
 		return transactions.map((transaction) => (
-			<Transaction
-				transaction={transaction}
-				key={transaction._id}
-				deleteTransaction={() => deleteTransaction(transaction._id)}
-			/>
+			<tr key={transaction._id}>
+				<td>
+					{transaction.first_name} {transaction.last_name}
+				</td>
+				<td>${transaction.amount}</td>
+				<td>{transaction.date}</td>
+				<td>
+					<button onClick={() => handleDelete(transaction._id)}>Delete</button>
+				</td>
+			</tr>
 		));
-	}
+	};
 
-	// This section will display the table with the Transactions.
 	return (
 		<div>
 			<h1>Rocket Elevators Transactions</h1>
-			<br></br>
 			<TransactionForm />
-			<br></br>
 			<h1>Recent Transactions</h1>
 			<table className="table table-striped" style={{ marginTop: 20 }}>
 				<thead>
@@ -78,4 +69,4 @@ async function deleteTransaction(id) {
 			</table>
 		</div>
 	);
-};
+}

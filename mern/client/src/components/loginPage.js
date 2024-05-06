@@ -16,7 +16,7 @@ export default function LoginPage() {
 		password: "",
 	});
 
-	const [alert, setAlert] = useState({ show: false, variant: "", message: "" });
+	const [alertState, setAlertState] = useState({ show: false, variant: "", message: "" });
 	const navigate = useNavigate();
 
 	function updateLoginForm(value) {
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
 		if (!loginForm.email || !loginForm.password) {
 			console.log("Login form is incomplete");
-			setAlert({
+			setAlertState({
 				show: true,
 				variant: "danger",
 				message: "Please fill out both Email and Password fields.",
@@ -59,7 +59,7 @@ export default function LoginPage() {
 
 			 console.log("Login successful");
 			setLoginForm({ email: "", password: "" });
-			setAlert({
+			setAlertState({
 				show: true,
 				variant: "success",
 				message: "Login successful.",
@@ -69,7 +69,7 @@ export default function LoginPage() {
 			console.error(error);
 			navigate("/error");
 			console.log("Login failed:", error.message);
-			setAlert({
+			setAlertState({
 				show: true,
 				variant: "danger",
 				message: "Invalid email or password. Please try again.",
@@ -105,20 +105,16 @@ export default function LoginPage() {
 			navigate("/");
 		} catch (error) {
 			console.error(error);
+			
 			window.alert("Registration Failed, Try Again");
 		}
 	}
 
 	return (
 		<div>
-			{alert.show && (
-				<Alert
-					variant={alert.variant}
-					onClose={() => setAlert({ show: false })}
-					dismissible
-				>
-					{alert.message}
-				</Alert>
+			{console.log("Alert state:", Alert)}
+			{alertState.show && (
+				<Alert variant={alertState.variant}>{alertState.message}</Alert>
 			)}
 			<div>
 				<h1>Login</h1>

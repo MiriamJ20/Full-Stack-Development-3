@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const sessionsSchema = new mongoose.Schema({
+const sessionSchema = new mongoose.Schema({
 	session_id: {
 		type: String,
 		trim: true,
@@ -18,4 +18,4 @@ const sessionsSchema = new mongoose.Schema({
 		// unique: true
 	},
 });
-module.exports = mongoose.model("sessions", sessionsSchema);
+module.exports = mongoose.model("session", sessionSchema);

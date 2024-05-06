@@ -1,104 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function NewTransaction() {
-	const [form, setForm] = useState({
-		first_name: "",
-		last_name: "",
-		amount: "",
-		date: "",
-	});
+export default function TransactionForm() {
+	const [form, setForm] = useState({ amount: "", agentId: "" });
+	const [agents, setAgents] = useState([]);
 
-	// These methods will update the state properties.
-	function updateForm(value) {
-		return setForm((prev) => {
-		return { ...prev, ...value };
-		});
-	}
-
-	// This function will handle the submission.
-	async function onSubmit(e) {
-		e.preventDefault();
-
-		if ( !form.first_name || !form.last_name || !form.amount ||!form.date) {
-			window.alert("Please fill out all fields.");
-			return;
+	useEffect(() => {
+		async function fetchAgentData() {
+			try {
+				const response = await fetch("http://localhost:5050/agent/");
+				if (!response.ok) {
+					throw new Error(`An error occurred: ${response.statusText}`);
+				}
+				const data = await response.json();
+				setAgents(data);
+			} catch (error) {
+				console.error("Error fetching agents:", error);
+			}
 		}
-		const newTransaction = { ...form };
 
-		await fetch("http://localhost:5050/transaction/", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(newTransaction),
-		})
-			.catch((error) => {
-			window.alert(error);
-			return;
-		});
+		fetchAgentData();
+	}, []);
 
-		setForm({ first_name: "", last_name: "", amount: "", date: "" });
+	const handleInputChange = (event) => {
+		const { name, value } = event.target;
+		    if (name === "amount" && (isNaN(value) || parseFloat(value) < 0)) {
+		return; 
 	}
+		setForm({ ...form, [name]: value });
+	};
 
-	// This following section will display the form that takes the input from the user.
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		try {
+			await fetch("http://localhost:5050/transaction/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ amount: form.amount, agentId: form.agentId }),
+			});
+			setForm({ amount: "", agentId: "" });
+		} catch (error) {
+			console.error("Error submitting transaction:", error);
+		}
+	};
+
 	return (
 		<div>
-			<h1>Transaction Form</h1>
-			<form onSubmit={onSubmit}>
+			<h2>Add New Transaction</h2>
+			<form onSubmit={handleSubmit}>
 				<div className="form-group col-md-3">
-					<label htmlFor="first_name">First Name:</label>
-					<input
-						type="text"
-						className="form-control"
-						id="first_name"
-						value={form.first_name}
-						onChange={(e) => updateForm({ first_name: e.target.value })}
-						required
-					/>
-				</div>
-				<div className="form-group col-md-3">
-					<label htmlFor="last_name">Last Name:</label>
-					<input
-						type="text"
-						className="form-control"
-						id="last_name"
-						value={form.last_name}
-						onChange={(e) => updateForm({ last_name: e.target.value })}
-						required
-					/>
-				</div>
-				<div className="form-group col-md-3">
-					<label htmlFor="amount">Amount:</label>
+					<label htmlFor="amount">Enter Amount:</label>
 					<input
 						type="number"
 						className="form-control"
 						id="amount"
+						name="amount"
 						value={form.amount}
-						onChange={(e) => updateForm({ amount: e.target.value })}
+						onChange={handleInputChange}
 						required
 					/>
 				</div>
 				<div className="form-group col-md-3">
-					<label htmlFor="date">Date:</label>
-					<input
-						type="date"
+					<label htmlFor="agentId">Select an Agent:</label>
+					<select
 						className="form-control"
-						id="date"
-						value={form.date}
-						onChange={(e) => updateForm({ date: e.target.value })}
+						id="agentId"
+						name="agentId"
+						value={form.agentId}
+						onChange={handleInputChange}
 						required
-					/>
+					>
+						<option value="">Select Agent</option>
+						{agents.map((agent) => (
+							<option key={agent._id} value={agent._id}>
+								{agent.first_name} {agent.last_name}
+							</option>
+						))}
+					</select>
 				</div>
-				<br />
-				<div className="form-group">
-					<input
-						type="submit"
-						value="submit"
-						className="btn btn-primary"
-					/>
-				</div>
+				<button type="submit" className="btn btn-primary">
+					Submit
+				</button>
 			</form>
 		</div>
 	);
 }
-
